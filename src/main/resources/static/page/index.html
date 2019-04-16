@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <link rel="stylesheet" href="../assets/libs/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/common.css">
+</head>
+<style>
+    .iframe{
+        margin-top: 0px;
+    }
+</style>
+<body>
+<div>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">旅游信息网</div>
+        <ul class="layui-nav layui-layout-left" style="margin-left: 70px">
+            <li class="layui-nav-item"><a href="">最新活动</a></li>
+            <li class="layui-nav-item layui-this"><a href="scenic.html" target="myiframe">景点</a></li>
+            <li class="layui-nav-item"><a href="hotal.html" target="myiframe">酒店预订</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">租车服务</a>
+                <dl class="layui-nav-child"> <!-- 二级菜单 -->
+                    <dd><a href="">移动模块</a></dd>
+                    <dd><a href="">后台模版</a></dd>
+                    <dd><a href="">电商平台</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">订单查询</a></li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item" lay-unselect>
+                <a id="btnUP"><img src="../assets/images/head.png" class="layui-nav-img"><span id="uName">用户名</span></a>
+                <dl class="layui-nav-child">
+                    <dd><a href="javascript:;">修改信息</a></dd>
+                    <dd><a href="javascript:;">安全管理</a></dd>
+                    <dd><a href="javascript:;">退了</a></dd>
+                </dl>
+            </li>
+
+            <li class="layui-nav-item" lay-unselect>
+                <a id="btnExit"><i class="layui-icon layui-icon-return"></i> 退出登录</a>
+            </li>
+        </ul>
+    </div>
+    <div class="iframe">
+    <iframe src="scenic.html" width="1532px" height="900px" name="myiframe" frameborder="0" scrolling="no"></iframe>
+    </div>
+
+</div>
+</div>
+<script src="../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../assets/common.js"></script>
+<script>
+
+    layui.use(['jquery', 'layer', 'element', 'form', 'admin','laytpl'], function(){
+        var element = layui.element;
+        var laytpl=layui.laytpl;
+        var admin = layui.admin;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+
+
+
+
+
+    });
+
+</script>
+</body>
+</html>

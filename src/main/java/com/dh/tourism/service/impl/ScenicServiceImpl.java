@@ -1,10 +1,14 @@
 package com.dh.tourism.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.dh.tourism.dao.ScenicMapper;
 import com.dh.tourism.dao.UserMapper;
+import com.dh.tourism.model.Scenic;
 import com.dh.tourism.model.User;
+import com.dh.tourism.service.ScenicService;
 import com.dh.tourism.service.UserService;
+import com.fasterxml.jackson.core.json.ByteSourceJsonBootstrapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,17 +21,16 @@ import java.util.List;
  * @date 2019/4/1423:14
  */
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements UserService{
+public class ScenicServiceImpl extends ServiceImpl<ScenicMapper,Scenic> implements ScenicService{
     @Override
-    public List<User> queryAll() {
+    public List<Scenic> queryAll() {
         return baseMapper.selectList(null);
     }
 
     @Override
-    public User getByUsername(String username) {
-        EntityWrapper entityWrapper=new EntityWrapper();
-        entityWrapper.eq("username",username);
-        List<User> users=baseMapper.selectList(entityWrapper);
-        return users.get(0);
+    public void insertOne(Scenic scenic) {
+         baseMapper.insertOne(scenic);
     }
+
+
 }

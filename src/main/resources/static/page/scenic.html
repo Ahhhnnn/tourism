@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <link rel="stylesheet" href="../assets/libs/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/common.css">
+</head>
+<style>
+    .type{
+        margin-left: 42px;
+        margin-top: -29px;
+    }
+    .head{
+        margin-top: 25px;
+    }
+    .img{
+        width: 220px;
+        height: 150px;
+    }
+    .recommend_item{
+        box-sizing: border-box;
+        border: 1px solid #DCDCDC;
+    }
+    .article_list{
+        margin-top: 80px;
+        width: 300px;
+    }
+    .recommend ul li{
+        display: inline-block;
+    }
+    .abroad ul li{
+        display: inline-block;
+    }
+    .domestic ul li{
+        display: inline-block;
+    }
+
+    .price .num{
+        color:#ff5555;
+        font-size: 19px;
+    }
+    .price .unit{
+        color: #ff5555;
+        font-size: 19px;
+    }
+
+</style>
+<body>
+<div>
+    <div class="layui-layout layui-layout-admin">
+        <div class="article_list">
+            展示文章列表
+
+        </div>
+        <div class="layui-body">
+            <div>
+                <div class="head">
+                    <img src="../assets/images/head2.PNG" class="layui-nav-img"><h2 class="type">热门推荐</h2>
+                    <hr class="layui-bg-orange">
+                </div>
+                <div class="recommend" >
+                    <ul style="display:block;" id="recommend">
+
+                    </ul>
+                </div>
+            </div>
+
+            <div>
+                <div class="head">
+                    <img src="../assets/images/head2.PNG" class="layui-nav-img"><h2 class="type">国内游</h2>
+                    <hr class="layui-bg-orange">
+                </div>
+                <div class="domestic">
+                    <ul style="display:block;" id="domestic">
+
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="head">
+                    <img src="../assets/images/head2.PNG" class="layui-nav-img"><h2 class="type">出境游</h2>
+                    <hr class="layui-bg-orange">
+                </div>
+                <div class="abroad">
+                    <ul style="display:block;" id="abroad">
+
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+<script id="recommend_demo" type="text/html">
+    {{#  layui.each(d.data, function(index, item){ }}
+    <li class="recommend_item">
+        <a>
+            <span class="cover">
+                <img class="img" src="../assets/images/recommend/{{item.picture}}" style="display: block">
+            </span>
+            <span class="name">{{item.name}}</span><br><br>
+            <span class="price">
+                <span class="unit">¥</span>
+                <span class="num">{{item.price}}</span>
+                <span>起</span>
+            </span>
+        </a>
+    </li>
+    {{#  }); }}
+</script>
+<script id="domestic_demo" type="text/html">
+    {{#  layui.each(d.data, function(index, item){ }}
+    <li class="domestic_item">
+        <a>
+            <span class="cover">
+                <img class="img" src="../assets/images/recommend/{{item.picture}}" style="display: block">
+            </span>
+            <span class="name">{{item.name}}</span><br><br>
+            <span class="price">
+                <span class="unit">¥</span>
+                <span class="num">{{item.price}}</span>
+                <span>起</span>
+            </span>
+        </a>
+    </li>
+    {{#  }); }}
+</script>
+<script id="abroad_demo" type="text/html">
+    {{#  layui.each(d.data, function(index, item){ }}
+    <li class="abroad_item">
+        <a>
+            <span class="cover">
+                <img class="img" src="../assets/images/recommend/{{item.picture}}" style="display: block">
+            </span>
+            <span class="name">{{item.name}}</span><br><br>
+            <span class="price">
+                <span class="unit">¥</span>
+                <span class="num">{{item.price}}</span>
+                <span>起</span>
+            </span>
+        </a>
+    </li>
+    {{#  }); }}
+</script>
+<script src="../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../assets/common.js"></script>
+<script>
+    layui.use(['jquery', 'layer', 'element', 'form', 'admin','laytpl'], function(){
+        var element = layui.element;
+        var laytpl=layui.laytpl;
+        var admin = layui.admin;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        //…
+        var data=[];
+        console.log("发送ajax请求");
+        admin.req('scenic/queryRecommend', {}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                console.log("res:"+res);
+                var recommend_demo=document.getElementById('recommend_demo');
+                var getTpl = recommend_demo.innerHTML
+                    ,view = document.getElementById('recommend');
+                console.log(recommend_demo);
+                laytpl(getTpl).render(res, function(html){
+                    console.log("html:"+html);
+                    view.innerHTML = html;
+                });
+            } else {
+                layer.msg('获取信息失败', {icon: 2});
+            }
+        }, 'GET');
+
+        admin.req('scenic/queryDomestic', {}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                console.log("res:"+res);
+                var recommend_demo=document.getElementById('domestic_demo');
+                var getTpl = recommend_demo.innerHTML
+                    ,view = document.getElementById('domestic');
+                console.log(recommend_demo);
+                laytpl(getTpl).render(res, function(html){
+                    console.log("html:"+html);
+                    view.innerHTML = html;
+                });
+            } else {
+                layer.msg('获取信息失败', {icon: 2});
+            }
+        }, 'GET');
+
+        admin.req('scenic/queryAbroad', {}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                console.log("res:"+res);
+                var recommend_demo=document.getElementById('abroad_demo');
+                var getTpl = recommend_demo.innerHTML
+                    ,view = document.getElementById('abroad');
+                console.log(recommend_demo);
+                laytpl(getTpl).render(res, function(html){
+                    console.log("html:"+html);
+                    view.innerHTML = html;
+                });
+            } else {
+                layer.msg('获取信息失败', {icon: 2});
+            }
+        }, 'GET');
+
+
+    });
+</script>
+</body>
+</html>

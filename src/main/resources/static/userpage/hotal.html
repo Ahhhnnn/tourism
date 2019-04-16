@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>酒店管理页面</title>
+    <link rel="stylesheet" href="../assets/libs/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../assets/module/formSelects/formSelects-v4.css" media="all">
+    <link rel="stylesheet" href="../assets/common.css" media="all">
+</head>
+<body>
+<div class="layui-input-block">
+
+    <form lay-filter="userForm" class="layui-form model-form">
+        <input type="radio" name="sex" value="男" title="男" checked/>
+        <input type="radio" name="sex" value="女" title="女"/>
+    </form>
+
+</div>
+<script src="../assets/libs/layui/layui.js"></script>
+<script>
+
+    layui.use(['jquery', 'layer', 'element', 'form', 'admin'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var element = layui.element;
+        var form = layui.form;
+        var admin = layui.admin;
+
+    });
+
+</script>
+</body>
+</html>
