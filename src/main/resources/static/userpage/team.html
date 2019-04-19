@@ -5,7 +5,7 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>景点管理界面</title>
+    <title>团队管理界面</title>
     <link rel="icon" href="../assets/images/favicon.ico"/>
     <link rel="stylesheet" href="../assets/libs/layui/css/layui.css" media="all">
     <link rel="stylesheet" href="../assets/module/formSelects/formSelects-v4.css" media="all">
@@ -20,21 +20,19 @@
             <div style="display: inline-block;width: 100px;margin-right: 10px;">
                 <select id="sltKey">
                     <option value="">搜索条件</option>
-                    <option value="name">景点名称</option>
-                    <option value="place">目的地</option>
-                    <option value="perice">价格</option>
-                    <option value="type">旅游类型</option>
+                    <option value="team_name">团队名称</option>
+                    <option value="guide_names">导游名称</option>
                 </select>
             </div>
             <div style="display: inline-block;margin-right: 10px;width: 160px;">
                 <input id="edtSearch" class="layui-input" type="text" placeholder="输入关键字"/>
             </div>
             <div class="layui-inline">
-                <button id="scenicBtnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
-                <button id="scenicBtnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+                <button id="teamBtnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+                <button id="teamBtnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
             </div>
 
-            <table class="layui-table" id="scenicTable" lay-filter="scenicTable"></table>
+            <table class="layui-table" id="teamTable" lay-filter="teamTable"></table>
         </div>
     </div>
 
@@ -51,57 +49,35 @@
            value="{{d.id}}" {{d.statu==0?'checked':''}}/>
 </script>
 <!-- 表单弹窗 -->
-<script type="text/html" id="scenicForm">
-    <form lay-filter="scenicForm" class="layui-form model-form">
+<script type="text/html" id="teamForm">
+    <form lay-filter="teamForm" class="layui-form model-form">
         <input name="id" type="hidden"/>
         <div class="layui-form-item">
-            <label class="layui-form-label">景点名称</label>
+            <label class="layui-form-label">团队名称</label>
             <div class="layui-input-block">
-                <input name="name" placeholder="请输入景点名称" type="text" class="layui-input"
+                <input name="teamName" placeholder="请输入团队名称" type="text" class="layui-input"
                        maxlength="20" lay-verify="required" required/>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">目的地</label>
+            <label class="layui-form-label">团队导游</label>
             <div class="layui-input-block">
-                <input name="place" placeholder="请输入目的地" type="text" class="layui-input"
-                       maxlength="20" lay-verify="required" required/>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">价格</label>
-            <div class="layui-input-block">
-                <input name="price" placeholder="请输入价格" type="text" class="layui-input"
-                       lay-verify="required|number" required/>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">旅游类型</label>
-            <div class="layui-input-block">
-                <select name="type"  lay-verify="required">
-                    <option value="">请选择旅游类型</option>
-                    <option value="recommend">热门推荐</option>
-                    <option value="domestic">国内旅游</option>
-                    <option value="abroad">境外游</option>
+                <select id="selGuide" name="guideId" xm-select="selGuide" xm-select-skin="default">
+                    <option value="">请选择导游</option>
                 </select>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">旅游路线</label>
+            <label class="layui-form-label">团队游客</label>
             <div class="layui-input-block">
-                <input name="route" placeholder="请输入旅游路线" type="text" class="layui-input"
-                       lay-verify="required" required/>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">景点介绍</label>
-            <div class="layui-input-block">
-                <textarea name="introduce" placeholder="请输入景点介绍" class="layui-textarea"></textarea>
+                <select name="personIds" xm-select="selPerson" xm-select-skin="default">
+
+                </select>
             </div>
         </div>
         <div class="layui-form-item text-right">
             <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
-            <button class="layui-btn" lay-filter="scenicFormSubmit" lay-submit>保存</button>
+            <button class="layui-btn" lay-filter="teamFormSubmit" lay-submit>保存</button>
         </div>
     </form>
 </script>
@@ -118,34 +94,27 @@
         var util = layui.util;
         var admin = layui.admin;
 
+        var formSelects = layui.formSelects;
+
+        var mGuides=[];
+        var mPersons=[];
+        var mPersonsNotRepact=[];//去重后的游客
         // 渲染表格
         table.render({
-            elem: '#scenicTable',
-            url: base_server + 'scenic/query',
+            elem: '#teamTable',
+            url: base_server + 'team/query',
             method: 'get',
             page: true,
             cellMinWidth: 100,
             cols: [[
                 {type: 'numbers'},
-                {field: 'name', title: '景点名称'},
-                {field: 'price', title: '价格/元'},
-                {
-                    templet: function (d) {
-                       var type=d.type;
-                       if(type=="recommend"){
-                           return "热门推荐";
-                       }else if(type=="domestic"){
-                           return "国内旅游";
-                       }else{
-                           return "境外游";
-                       }
-                    }, title: '旅游类型'
-                },
-                {field: 'place', title: '目的地'},
+                {field: 'teamName', title: '团队名称'},
+                {field: 'guideName', title: '导游名称'},
+                {field: 'personNames', title: '旅游名称'},
                 {
                     templet: function (d) {
                         return util.toDateString(d.createTime);
-                    }, title: '创建时间'
+                    }, title: '创建时间',width:180
                 },
                 {field: 'statu', templet: '#tbaleState', title: '状态', unresize: true, width: 100},
                 {align: 'center', toolbar: '#tableBar', title: '操作', unresize: true, width: 200}
@@ -155,27 +124,27 @@
         });
 
         // 搜索按钮点击事件
-        $('#scenicBtnSearch').click(function () {
+        $('#teamBtnSearch').click(function () {
             var key = $('#sltKey').val();
             var value = $('#edtSearch').val();
-            table.reload('scenicTable', {where: {searchKey: key, searchValue: value}});
+            table.reload('teamTable', {where: {searchKey: key, searchValue: value}});
         });
 
         // 添加按钮点击事件
-        $('#scenicBtnAdd').click(function () {
+        $('#teamBtnAdd').click(function () {
             showAddModel();
         });
 
         // 工具条点击事件
-        table.on('tool(scenicTable)', function (obj) {
+        table.on('tool(teamTable)', function (obj) {
             var data = obj.data;
             var layEvent = obj.event;
 
             if (layEvent === 'del') { // 删除
-                layer.confirm('确定删除此景点吗？', function (i) {
+                layer.confirm('确定删除团队吗？', function (i) {
                     layer.close(i);
                     layer.load(2);
-                    admin.req('scenic/delete/' + obj.data.id, {}, function (data) {
+                    admin.req('team/delete/' + obj.data.id, {}, function (data) {
                         layer.closeAll('loading');
                         if (data.code == 200) {
                             layer.msg(data.msg, {icon: 1});
@@ -190,10 +159,10 @@
             }
         });
 
-        // 修改scenic状态
+        // 修改car状态
         form.on('switch(ckStatu)', function (obj) {
             layer.load(2);
-            admin.req('scenic/statu', {
+            admin.req('team/statu', {
                 id: obj.elem.value,
                 statu: obj.elem.checked ? 0 : 1
             }, function (data) {
@@ -213,26 +182,47 @@
             console.log(data);
             layer.open({
                 type: 1,
-                area: '400px',
+                area: '360px',
                 offset: '65px',
-                title: '修改景点',
-                content: $('#scenicForm').html(),
+                title: '修改团队信息',
+                content: $('#teamForm').html(),
                 success: function (layero, index) {
                     $(layero).children('.layui-layer-content').css('overflow', 'visible');
                     form.render();
-                    // 回显scenic数据
-                    if (data) {
-                        form.val('scenicForm', data);
+                    //渲染 导游
+                    var guideSelData=new Array();
+                    for (var i=0;i<mGuides.length;i++){
+                        guideSelData.push({name:mGuides[i].guideName,value:mGuides[i].id});
                     }
+                    //formSelects.data('selGuide','local',{arr:guideSelData});
+                    for(var i=0;i<guideSelData.length;i++){
+                        $('#selGuide').append("<option value='"+guideSelData[i].value+"'>"+guideSelData[i].name+"</option>");
+                    }
+                    //渲染游客
+                    var personSelData=new Array();
+                    for (var i=0;i<mPersons.length;i++){
+                        personSelData.push({name:mPersons[i].personName,value:mPersons[i].personId});
+                    }
+                    formSelects.data('selPerson','local',{arr:personSelData});
+                    form.render('select');
+                    // 回显team数据
+                    if (data) {
+                        form.val('teamForm', data);
+                        var personIds=data.personIds;
+                        console.log(personIds);
+                        var persons=personIds.split(',');
+                        formSelects.value('selPerson',persons);
+                    }
+                    form.render('select');
                     // 表单提交事件
-                    form.on('submit(scenicFormSubmit)', function (d) {
+                    form.on('submit(teamFormSubmit)', function (d) {
                         layer.load(2);
-                        admin.req('scenic/update', d.field, function (res) {
+                        admin.req('team/update', d.field, function (res) {
                             layer.closeAll('loading');
                             if (res.code == 200) {
                                 layer.msg(res.msg, {icon: 1});
                                 layer.closeAll('page');
-                                table.reload('scenicTable');
+                                table.reload('teamTable');
                             } else {
                                 layer.msg(res.msg, {icon: 2});
                             }
@@ -246,24 +236,39 @@
         function showAddModel() {
             layer.open({
                 type: 1,
-                area: '400px',
+                area: '360px',
                 offset: '65px',
-                title: '添加景点',
-                content: $('#scenicForm').html(),
+                title: '添加团队信息',
+                content: $('#teamForm').html(),
                 success: function (layero, index) {
                     $(layero).children('.layui-layer-content').css('overflow', 'visible');
                     form.render();
-
+                    //渲染 导游
+                    var guideSelData=new Array();
+                    for (var i=0;i<mGuides.length;i++){
+                        guideSelData.push({name:mGuides[i].guideName,value:mGuides[i].id});
+                    }
+                    //formSelects.data('selGuide','local',{arr:guideSelData});
+                    for(var i=0;i<guideSelData.length;i++){
+                        $('#selGuide').append("<option value='"+guideSelData[i].value+"'>"+guideSelData[i].name+"</option>");
+                    }
+                    //渲染游客
+                    var personSelData=new Array();
+                    for (var i=0;i<mPersonsNotRepact.length;i++){
+                        personSelData.push({name:mPersonsNotRepact[i].personName,value:mPersonsNotRepact[i].personId});
+                    }
+                    formSelects.data('selPerson','local',{arr:personSelData});
+                    form.render('select');
                     // 表单提交事件
-                    form.on('submit(scenicFormSubmit)', function (d) {
+                    form.on('submit(teamFormSubmit)', function (d) {
                         layer.load(2);
-                        admin.req('scenic/insert', d.field, function (res) {
+                        admin.req('team/insert', d.field, function (res) {
                             console.log(d);
                             layer.closeAll('loading');
                             if (res.code == 200) {
                                 layer.msg(res.msg, {icon: 1});
                                 layer.closeAll('page');
-                                table.reload('scenicTable');
+                                table.reload('teamTable');
                             } else {
                                 layer.msg(res.msg, {icon: 2});
                             }
@@ -274,6 +279,44 @@
             });
         }
 
+        //获取导游
+        admin.req('guide/queryAllStatu', {}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                mGuides = res.data;
+                for(var i=0;i<mGuides.length;i++) {
+                    console.log("导游:"+mGuides[i].guideName);
+                }
+            } else {
+                layer.msg('获取状态正常导游失败', {icon: 2});
+            }
+        }, 'GET');
+
+
+        admin.req('person/queryAllStatu', {}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                mPersons = res.data;
+                for(var i=0;i<mPersons.length;i++) {
+                    console.log("游客:"+mPersons[i].personName);
+                }
+            } else {
+                layer.msg('获取状态正常游客失败', {icon: 2});
+            }
+        }, 'GET');
+
+        //获取去重后的游客
+        admin.req('person/queryNotRepact', {}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                mPersonsNotRepact = res.data;
+                for(var i=0;i<mPersonsNotRepact.length;i++) {
+                    console.log("去重后游客:"+mPersonsNotRepact[i].personName);
+                }
+            } else {
+                layer.msg('获取去重后游客失败', {icon: 2});
+            }
+        }, 'GET');
 
     });
 </script>

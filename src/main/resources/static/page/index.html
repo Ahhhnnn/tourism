@@ -1,73 +1,184 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>首页</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>旅游信息后台管理系统</title>
+    <link rel="icon" href="../assets/images/favicon.ico"/>
     <link rel="stylesheet" href="../assets/libs/layui/css/layui.css">
     <link rel="stylesheet" href="../assets/common.css">
+    <script src="../assets/libs/jquery/jquery-3.2.1.min.js"></script>
+    <script src="../assets/libs/jquery/jquery.cookie.js"></script>
 </head>
-<style>
-    .iframe{
-        margin-top: 0px;
-    }
-</style>
-<body>
-<div>
+
+<body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
-    <div class="layui-header">
-        <div class="layui-logo">旅游信息网</div>
-        <ul class="layui-nav layui-layout-left" style="margin-left: 70px">
-            <li class="layui-nav-item"><a href="">最新活动</a></li>
-            <li class="layui-nav-item layui-this"><a href="scenic.html" target="myiframe">景点</a></li>
-            <li class="layui-nav-item"><a href="hotal.html" target="myiframe">酒店预订</a></li>
-            <li class="layui-nav-item">
-                <a href="javascript:;">租车服务</a>
-                <dl class="layui-nav-child"> <!-- 二级菜单 -->
-                    <dd><a href="">移动模块</a></dd>
-                    <dd><a href="">后台模版</a></dd>
-                    <dd><a href="">电商平台</a></dd>
-                </dl>
+    <div class="layui-header layui-bg-cyan">
+        <div class="layui-logo">旅行社后台管理系统</div>
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item" lay-unselect>
+                <!--<a href="https://easyweb.vip" target="_blank" id="ag">
+                    <i class="layui-icon layui-icon-website"></i>
+                </a>-->
             </li>
+        </ul>
+        <ul class="layui-nav layui-layout-left" style="margin-left: 70px">
+            <li class="layui-nav-item"><a href="">网站首页</a></li>
             <li class="layui-nav-item"><a href="">订单查询</a></li>
         </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item" lay-unselect>
                 <a id="btnUP"><img src="../assets/images/head.png" class="layui-nav-img"><span id="uName">用户名</span></a>
-                <dl class="layui-nav-child">
-                    <dd><a href="javascript:;">修改信息</a></dd>
-                    <dd><a href="javascript:;">安全管理</a></dd>
-                    <dd><a href="javascript:;">退了</a></dd>
-                </dl>
             </li>
-
             <li class="layui-nav-item" lay-unselect>
                 <a id="btnExit"><i class="layui-icon layui-icon-return"></i> 退出登录</a>
             </li>
         </ul>
     </div>
-    <div class="iframe">
-    <iframe src="scenic.html" width="1532px" height="900px" name="myiframe" frameborder="0" scrolling="no"></iframe>
+
+    <div class="layui-side">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree" style="margin-top: 10px;">
+                <li class="layui-nav-item">
+                    <a><i class="layui-icon layui-icon-console"></i>&emsp;游客管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a lay-href="myTeam.html">我的团队</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a><i class="layui-icon layui-icon-console"></i>&emsp;旅行管理</a>
+                    <dl class="layui-nav-child">
+                        <dd class="layui-this"><a lay-href="scenic.html">旅游方案</a></dd>
+                        <dd><a lay-href="">酒店预订</a></dd>
+                        <dd><a lay-href="">车辆预订</a></dd>
+                        <dd><a lay-href="">旅游订单</a></dd>
+                        <dd><a lay-href="">费用统计</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a><i class="layui-icon layui-icon-list"></i>&emsp;其他</a>
+                    <dl class="layui-nav-child">
+                        <dd><a lay-href="">系统介绍</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
     </div>
 
+    <div class="layui-body" style="margin-left: -90px">
+        <iframe name="body" class="admin-iframe" src="scenic.html" frameborder="0"></iframe>
+    </div>
 </div>
-</div>
-<script src="../assets/libs/layui/layui.js"></script>
+<!-- 修改密码弹窗 -->
+<script type="text/html" id="upModel">
+    <form class="layui-form model-form" id="formPsw">
+        <input id="id" name="id" value="" hidden>
+        <div class="layui-form-item">
+            <label class="layui-form-label">原始密码:</label>
+            <div class="layui-input-block">
+                <input type="password" name="oldPsw" placeholder="请输入原始密码" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码:</label>
+            <div class="layui-input-block">
+                <input type="password" name="newPsw" placeholder="请输入新密码" class="layui-input"
+                       lay-verType="tips" lay-verify="required|psw" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">确认密码:</label>
+            <div class="layui-input-block">
+                <input type="password" name="rePsw" placeholder="请再次输入新密码" class="layui-input"
+                       lay-verType="tips" lay-verify="required|repsw" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block text-right">
+                <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+                <button class="layui-btn" lay-filter="submitPsw" lay-submit>保存</button>
+            </div>
+        </div>
+    </form>
+</script>
+
+<script type="text/javascript" src="../assets/libs/layui/layui.js"></script>
 <script type="text/javascript" src="../assets/common.js"></script>
 <script>
-
-    layui.use(['jquery', 'layer', 'element', 'form', 'admin','laytpl'], function(){
-        var element = layui.element;
-        var laytpl=layui.laytpl;
-        var admin = layui.admin;
+    layui.use(['jquery', 'layer', 'element', 'form', 'admin'], function () {
         var $ = layui.jquery;
         var layer = layui.layer;
+        var element = layui.element;
+        var form = layui.form;
+        var admin = layui.admin;
+
+        var guidename=$.cookie('guidename');
+        var id=$.cookie('id');
+        if (guidename==null){
+            location.replace('login.html');
+        }
+        console.log(guidename);
+        console.log(id);
+        $('#uName').text(guidename);
+
+        // 退出登录
+        $('#btnExit').click(function () {
+            layer.confirm('确定退出登录吗？', function (i) {
+                layer.close(i);
+                admin.removeToken();
+                location.replace('../login.html');
+            });
+        });
+
+        // 修改密码
+        $('#btnUP').click(function () {
+            layer.open({
+                type: 1,
+                title: '修改密码',
+                area: '360px',
+                offset: '65px',
+                content: $('#upModel').html()
+            });
+            console.log(id);
+            $('#id').val(id);
+        });
+
+        // 监听修改密码表单提交
+        form.on('submit(submitPsw)', function (d) {
+            layer.load(2);
+            admin.req('guide/psw', d.field, function (res) {
+                if (res.code == 200) {
+                    layer.closeAll('loading');
+                    layer.closeAll('page');
+                    layer.msg(res.msg, {icon: 1, time: 1500}, function () {
+                        // location.replace('login.html');
+                    });
+                } else {
+                    layer.closeAll('loading');
+                    layer.msg(res.msg, {icon: 2});
+                }
+            }, 'PUT');
+            return false;
+        });
+
+        // 添加表单验证方法
+        form.verify({
+            psw: [/^[\S]{5,12}$/, '密码必须5到12位，且不能出现空格'],
+            repsw: function (t) {
+                if (t !== $('#formPsw input[name=newPsw]').val()) {
+                    return '两次密码输入不一致';
+                }
+            }
+        });
 
 
-
-
-
+        $('#ag').mouseleave(function () {
+            layer.closeAll('tips');
+        });
     });
-
 </script>
 </body>
 </html>

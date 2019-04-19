@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.dh.tourism.commom.JsonResult;
 import com.dh.tourism.commom.PageResult;
 import com.dh.tourism.exception.BusinessException;
+import com.dh.tourism.model.Guide;
 import com.dh.tourism.model.Role;
 import com.dh.tourism.model.User;
 import com.dh.tourism.model.UserRole;
+import com.dh.tourism.service.GuideService;
 import com.dh.tourism.service.RoleService;
 import com.dh.tourism.service.UserRoleService;
 import com.dh.tourism.service.UserService;
@@ -40,7 +42,8 @@ public class UserController {
     private RoleService roleService;
     @Autowired
     private UserRoleService userRoleService;
-
+    @Autowired
+    private GuideService guideService;
     @RequestMapping("/query")
     public List<User> query(){
         List<User> userList=userService.queryAll();
@@ -48,16 +51,25 @@ public class UserController {
     }
 
     @RequestMapping("login")
-    public PageResult<User> login(String username,String password){
+    public PageResult login(String username,String password){
         User user = userService.getByUsername(username);
-        if (user == null) {
+        Guide guide=guideService.getGuideByAcount(username);
+        if (user == null&&guide==null) {
             return new PageResult<>("账号不存在",400);
-        } else if (!user.getPassword().equals(EndecryptUtils.encrytMd5(password))) {
+        } else if (user!=null&&!user.getPassword().equals(EndecryptUtils.encrytMd5(password))) {
             return new PageResult<>("密码错误",400);
+        }else if(user!=null&&user.getPassword().equals(EndecryptUtils.encrytMd5(password))){
+            List<User> userList=new ArrayList<>();
+            userList.add(user);
+            return new PageResult<User>(200,"登录成功",userList.size(),userList);
+        }else if(guide!=null&!guide.getPassword().equals(password)){
+            return new PageResult<>("密码错误",400);
+        }else {
+            List<Guide> guideList=new ArrayList<>();
+            guideList.add(guide);
+            return new PageResult<Guide>(201,"登录成功",guideList.size(),guideList);
         }
-        List<User> userList=new ArrayList<>();
-        userList.add(user);
-        return new PageResult<User>(200,"登录成功",userList.size(),userList);
+
     }
 
     @ApiOperation(value = "查询所有用户", notes = "")

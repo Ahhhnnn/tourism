@@ -8,34 +8,33 @@ import java.util.Date;
 
 /**
  * @author duhan
- * @title: Scenic
+ * @title: ScenicOrder
  * @projectName tourism
  * @description: TODO
- * @date 2019/4/1515:10
+ * @date 2019/4/1914:00
  */
 @Data
-@TableName("tr_scenic")
-public class Scenic {
+@TableName("tr_scenic_order")
+public class ScenicOrder {
     @TableId
     private Integer id;
 
-    private String name;
+    private Integer scenicId;
 
-    private String picture;//图片路径
+    private Integer teamId;
 
-    private String price;
+    private Integer guideId;
 
-    private String type;
+    private String guideName;
 
-    private String route;//旅游路线
+    private String startTime;//出发时间
 
-    private String introduce;//景点介绍
-
-    private String place;
+    private String endTime; //归回日期
 
     private Integer statu;//状态
 
     private Date createTime;  // 注册时间
 
     private Date updateTime;  // 修改时间
+
 }

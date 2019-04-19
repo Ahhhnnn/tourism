@@ -5,7 +5,7 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>用户管理</title>
+    <title>导游管理</title>
     <link rel="icon" href="../assets/images/favicon.ico"/>
     <link rel="stylesheet" href="../assets/libs/layui/css/layui.css" media="all">
     <link rel="stylesheet" href="../assets/module/formSelects/formSelects-v4.css" media="all">
@@ -20,7 +20,7 @@
             <div style="display: inline-block;width: 100px;margin-right: 10px;">
                 <select id="sltKey">
                     <option value="" selected="selected">搜索条件</option>
-                    <option value="person_name">姓名</option>
+                    <option value="guide_name">姓名</option>
                     <option value="sex">性别</option>
                     <option value="phone">手机号</option>
                 </select>
@@ -29,11 +29,11 @@
                 <input id="edtSearch" class="layui-input" type="text" placeholder="输入关键字"/>
             </div>
             <div class="layui-inline">
-                <button id="userBtnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>查询人员</button>
-                <button id="userBtnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加人员</button>
+                <button id="guideBtnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>查询人员</button>
+                <button id="guideBtnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加人员</button>
             </div>
 
-            <table class="layui-table" id="userTable" lay-filter="userTable"></table>
+            <table class="layui-table" id="guideTable" lay-filter="guideTable"></table>
         </div>
     </div>
 
@@ -41,24 +41,40 @@
 
 <!-- 表格操作列 -->
 <script type="text/html" id="tableBar">
-   <!-- <a class="layui-btn layui-btn layui-btn-xs" lay-event="reset">重置密码</a>-->
-    <a class="layui-btn layui-btn-primary layui-btn-sm" lay-event="edit">修改</a>
-    <a class="layui-btn layui-btn-warm layui-btn-sm" lay-event="del">删除</a>
+    <div class="layui-btn-group">
+        <a class="layui-btn layui-btn layui-btn-sm" lay-event="reset">重置密码</a>
+        <a class="layui-btn layui-btn-primary layui-btn-sm" lay-event="edit">修改</a>
+        <a class="layui-btn layui-btn-warm layui-btn-sm" lay-event="del">删除</a>
+    </div>
 </script>
 <!-- 表格状态列 -->
 <script type="text/html" id="tbaleState">
     <input type="checkbox" lay-filter="ckState" lay-skin="switch" lay-text="正常|锁定"
-           value="{{d.personId}}" {{d.statu==0?'checked':''}}/>
+           value="{{d.id}}" {{d.statu==0?'checked':''}}/>
 </script>
 <!-- 表单弹窗 -->
-<script type="text/html" id="userForm">
-    <form lay-filter="userForm" class="layui-form model-form">
-        <input name="personId" type="hidden"/>
+<script type="text/html" id="guideForm">
+    <form lay-filter="guideForm" class="layui-form model-form">
+        <input name="id" type="hidden"/>
         <div class="layui-form-item">
-            <label class="layui-form-label">姓名</label>
+            <label class="layui-form-label">账号</label>
             <div class="layui-input-block">
-                <input name="personName" placeholder="请输入游客姓名" type="text" class="layui-input"
+                <input name="acount" placeholder="请输入登录账号" type="text" class="layui-input"
                        maxlength="10" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">导游姓名</label>
+            <div class="layui-input-block">
+                <input name="guideName" placeholder="请输入导游姓名" type="text" class="layui-input"
+                       maxlength="10" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">年龄</label>
+            <div class="layui-input-block">
+                <input name="age" placeholder="请输入年龄" type="text" class="layui-input"
+                       lay-verify="required|unmber" required/>
             </div>
         </div>
         <div class="layui-form-item">
@@ -69,10 +85,10 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">邮箱</label>
+            <label class="layui-form-label">薪资</label>
             <div class="layui-input-block">
-                <input name="email" placeholder="请输入邮箱" type="text" class="layui-input"
-                       maxlength="20" lay-verify="required|email" required/>
+                <input name="salary" placeholder="请输入薪资" type="text" class="layui-input"
+                       lay-verify="required|number" required/>
             </div>
         </div>
         <div class="layui-form-item">
@@ -80,14 +96,6 @@
             <div class="layui-input-block">
                 <input name="address" placeholder="请输入游客住址" type="text" class="layui-input"
                        maxlength="20" lay-verify="required" required/>
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">出生日期</label>
-            <div class="layui-input-block">
-                <input id="datetest" name="birthday" placeholder="请选择出生日期" type="text" class="layui-input"
-                        lay-verify="required" required/>
             </div>
         </div>
         <div class="layui-form-item">
@@ -100,7 +108,7 @@
 
         <div class="layui-form-item text-right">
             <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
-            <button class="layui-btn" lay-filter="userFormSubmit" lay-submit>保存</button>
+            <button class="layui-btn" lay-filter="guideFormSubmit" lay-submit>保存</button>
         </div>
     </form>
 </script>
@@ -121,17 +129,18 @@
 
         // 渲染表格
         table.render({
-            elem: '#userTable',
-            url: base_server + 'person/query',
+            elem: '#guideTable',
+            url: base_server + 'guide/query',
             method: 'post',
             page: true,
             cellMinWidth: 100,
             cols: [[
                 {type: 'numbers'},
-                {field: 'personName', title: '姓名'},
+                {field: 'guideName', title: '姓名'},
+                {field: 'acount', title: '账号'},
                 {field: 'phone', title: '手机号'},
                 {field: 'sex', title: '性别'},
-                {field: 'email', title: '邮箱'},
+                {field: 'salary', title: '薪资'},
                 {field: 'address', title: '住址'},
                 {
                     templet: function (d) {
@@ -146,27 +155,27 @@
         });
 
         // 搜索按钮点击事件
-        $('#userBtnSearch').click(function () {
+        $('#guideBtnSearch').click(function () {
             var key = $('#sltKey').val();
             var value = $('#edtSearch').val();
-            table.reload('userTable', {where: {searchKey: key, searchValue: value}});
+            table.reload('guideTable', {where: {searchKey: key, searchValue: value}});
         });
 
         // 添加按钮点击事件
-        $('#userBtnAdd').click(function () {
+        $('#guideBtnAdd').click(function () {
             showAddModel();
         });
 
         // 工具条点击事件
-        table.on('tool(userTable)', function (obj) {
+        table.on('tool(guideTable)', function (obj) {
             var data = obj.data;
             var layEvent = obj.event;
 
             if (layEvent === 'del') { // 删除
-                layer.confirm('确定删除此用户吗？', function (i) {
+                layer.confirm('确定删除此导游吗？', function (i) {
                     layer.close(i);
                     layer.load(2);
-                    admin.req('person/delete/' + obj.data.personId, {}, function (data) {
+                    admin.req('guide/delete/' + obj.data.guideId, {}, function (data) {
                         layer.closeAll('loading');
                         if (data.code == 200) {
                             layer.msg(data.msg, {icon: 1});
@@ -176,11 +185,11 @@
                         }
                     }, 'DELETE');
                 });
-            }/* else if (layEvent === 'reset') { // 重置密码
-                layer.confirm('确定重置此用户的密码吗？<br><span style="color: red;">（初始密码为123456）</span>', function (i) {
+            } else if (layEvent === 'reset') { // 重置密码
+                layer.confirm('确定重置此导游的密码吗？<br><span style="color: red;">（初始密码为123456）</span>', function (i) {
                     layer.close(i);
                     layer.load(2);
-                    admin.req('user/psw/' + obj.data.userId, {}, function (data) {
+                    admin.req('guide/psw/' + obj.data.guideId, {}, function (data) {
                         layer.closeAll('loading');
                         if (data.code == 200) {
                             layer.msg(data.msg, {icon: 1});
@@ -189,16 +198,16 @@
                         }
                     }, 'PUT');
                 });
-            }*/ else if (layEvent === 'edit') { // 修改
+            } else if (layEvent === 'edit') { // 修改
                 showEditModel(data);
             }
         });
 
-        // 修改person状态
+        // 修改guide状态
         form.on('switch(ckState)', function (obj) {
             layer.load(2);
-            admin.req('person/statu', {
-                personId: obj.elem.value,
+            admin.req('guide/statu', {
+                id: obj.elem.value,
                 statu: obj.elem.checked ? 0 : 1
             }, function (data) {
                 layer.closeAll('loading');
@@ -219,36 +228,25 @@
                 type: 1,
                 area: '360px',
                 offset: '65px',
-                title: '修改用户',
-                content: $('#userForm').html(),
+                title: '修改导游信息',
+                content: $('#guideForm').html(),
                 success: function (layero, index) {
                     $(layero).children('.layui-layer-content').css('overflow', 'visible');
                     form.render('radio');
-                    // 渲染角色下拉框
-                   /* var roleSelData = new Array();
-                    for (var i = 0; i < mRoles.length; i++) {
-                        roleSelData.push({name: mRoles[i].roleName, value: mRoles[i].roleId});
-                    }*/
-                    //formSelects.data('selRole', 'local', {arr: roleSelData});
-                    // 回显user数据
+
                     if (data) {
-                        form.val('userForm', data);
-                        //var rds = new Array();
-                        /*for (var i = 0; i < data.roles.length; i++) {
-                            rds.push(data.roles[i].roleId);
-                        }*/
-                        //formSelects.value('selRole', rds);  // 回显多选框
+                        form.val('guideForm', data);
                     }
                     // 表单提交事件
-                    form.on('submit(userFormSubmit)', function (d) {
+                    form.on('submit(guideFormSubmit)', function (d) {
                         //d.field.roleIds = formSelects.value('selRole', 'valStr');
                         layer.load(2);
-                        admin.req('person/update', d.field, function (res) {
+                        admin.req('guide/update', d.field, function (res) {
                             layer.closeAll('loading');
                             if (res.code == 200) {
                                 layer.msg(res.msg, {icon: 1});
                                 layer.closeAll('page');
-                                table.reload('userTable');
+                                table.reload('guideTable');
                             } else {
                                 layer.msg(res.msg, {icon: 2});
                             }
@@ -257,10 +255,6 @@
                     });
                 }
             });
-            //日期选择实例
-            laydate.render({
-                elem: '#datetest' //指定元素
-            });
         }
 
         function showAddModel() {
@@ -268,37 +262,23 @@
                 type: 1,
                 area: '360px',
                 offset: '65px',
-                title: '添加用户',
-                content: $('#userForm').html(),
+                title: '添加导游信息',
+                content: $('#guideForm').html(),
                 success: function (layero, index) {
                     $(layero).children('.layui-layer-content').css('overflow', 'visible');
                     form.render('radio');
-                    // 渲染角色下拉框
-                    /* var roleSelData = new Array();
-                     for (var i = 0; i < mRoles.length; i++) {
-                         roleSelData.push({name: mRoles[i].roleName, value: mRoles[i].roleId});
-                     }*/
-                    //formSelects.data('selRole', 'local', {arr: roleSelData});
-                    // 回显user数据
-                    /*if (data) {
-                        form.val('userForm', data);
-                        var rds = new Array();
-                        for (var i = 0; i < data.roles.length; i++) {
-                            rds.push(data.roles[i].roleId);
-                        }
-                        formSelects.value('selRole', rds);  // 回显多选框
-                    }*/
+
                     // 表单提交事件
-                    form.on('submit(userFormSubmit)', function (d) {
+                    form.on('submit(guideFormSubmit)', function (d) {
                         //d.field.roleIds = formSelects.value('selRole', 'valStr');
                         layer.load(2);
-                        admin.req('person/insert', d.field, function (res) {
+                        admin.req('guide/insert', d.field, function (res) {
                             console.log(d);
                             layer.closeAll('loading');
                             if (res.code == 200) {
                                 layer.msg(res.msg, {icon: 1});
                                 layer.closeAll('page');
-                                table.reload('userTable');
+                                table.reload('guideTable');
                             } else {
                                 layer.msg(res.msg, {icon: 2});
                             }
@@ -307,22 +287,8 @@
                     });
                 }
             });
-            //日期选择实例
-            laydate.render({
-                elem: '#datetest' //指定元素
-            });
         }
 
-        // 获取所有角色
-       /* layer.load(2);
-        admin.req('dept/queryAll', {}, function (res) {
-            layer.closeAll('loading');
-            if (0 == res.code) {
-                mRoles = res.data;
-            } else {
-                layer.msg('获取角色失败', {icon: 2});
-            }
-        }, 'GET');*/
 
     });
 </script>

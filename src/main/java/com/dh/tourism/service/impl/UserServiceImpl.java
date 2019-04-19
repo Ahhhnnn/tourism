@@ -28,6 +28,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         EntityWrapper entityWrapper=new EntityWrapper();
         entityWrapper.eq("username",username);
         List<User> users=baseMapper.selectList(entityWrapper);
-        return users.get(0);
+        if(users.size()==0){
+            return null;
+        }else {
+            return users.get(0);
+        }
     }
 }

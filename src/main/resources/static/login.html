@@ -59,7 +59,7 @@
             layer.load(2);
             admin.req('/user/login', field, function (res) {
                 layer.closeAll('loading');
-                if (200 == res.code) {
+                if (200 == res.code) {//如果为200 说明为管理员 转到index界面
                     var data=res.data;
                     console.log("username:"+data[0].nickName);
                     console.log("userId:"+data[0].userId);
@@ -68,7 +68,17 @@
                     layer.msg(res.msg, {icon: 1, time: 1000}, function () {
                         goIndex();
                     });
-                } else {
+                }else if(201 == res.code){//code=201代表为 导游登录，转到导游管理index界面
+                    var data=res.data;
+                    console.log("guidename:"+data[0].guideName);
+                    console.log("id:"+data[0].id);
+                    $.cookie('guidename',data[0].guideName);
+                    $.cookie('id',data[0].id);
+                    layer.msg(res.msg, {icon: 1, time: 1000}, function () {
+                        goPageIndex();
+                    });
+                }
+                else {
                     layer.msg(res.msg, {icon: 5});
                 }
             }, 'POST');
@@ -76,6 +86,10 @@
 
         function goIndex() {
             location.replace('index.html');
+        }
+
+        function goPageIndex() {
+            location.replace('page/index.html');
         }
     });
 </script>
