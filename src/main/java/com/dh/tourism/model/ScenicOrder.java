@@ -21,7 +21,11 @@ public class ScenicOrder {
 
     private Integer scenicId;
 
+    private String scenicName;
+
     private Integer teamId;
+
+    private String teamName;
 
     private Integer guideId;
 
@@ -30,6 +34,8 @@ public class ScenicOrder {
     private String startTime;//出发时间
 
     private String endTime; //归回日期
+
+    private String price;//订单总价
 
     private Integer statu;//状态
 

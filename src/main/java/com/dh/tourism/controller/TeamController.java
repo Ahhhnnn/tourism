@@ -5,14 +5,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.dh.tourism.commom.JsonResult;
 import com.dh.tourism.commom.PageResult;
-import com.dh.tourism.model.Guide;
-import com.dh.tourism.model.Person;
-import com.dh.tourism.model.ScenicOrder;
-import com.dh.tourism.model.Team;
-import com.dh.tourism.service.GuideService;
-import com.dh.tourism.service.PersonService;
-import com.dh.tourism.service.ScenicOrderService;
-import com.dh.tourism.service.TeamService;
+import com.dh.tourism.model.*;
+import com.dh.tourism.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,6 +37,11 @@ public class TeamController {
     private PersonService personService;
     @Autowired
     private ScenicOrderService scenicOrderService;
+
+    @Autowired
+    private CarOrderService carOrderService;
+    @Autowired
+    private HotalOrderService hotalOrderService;
 
     @RequestMapping("/query")
     public PageResult<Team> list(Integer page, Integer limit, String searchKey, String searchValue,Integer guideId) {
@@ -137,6 +136,65 @@ public class TeamController {
             }
         }
         return new PageResult<Team>(200,"查询成功",finalTeam.size(),finalTeam);
+    }
+
+    /**
+     * 查询去重后的团队列表，租车界面使用
+     * @param guideId
+     * @return
+     */
+    @RequestMapping("queryNotRepactForCar")
+    public PageResult<Team> queryNotRepactForCar(Integer guideId){
+        EntityWrapper<CarOrder> CarOrderWrapper=new EntityWrapper<CarOrder>();
+        List<CarOrder> CarOrders= carOrderService.selectList(CarOrderWrapper);
+        List<Integer> existTeamIds=CarOrders.stream().map(CarOrder->CarOrder.getTeamId()).collect(Collectors.toList());
+        List<Team> finalTeam=new ArrayList<>();
+
+        EntityWrapper<Team> teamWrapper=new EntityWrapper<>();
+        teamWrapper.eq("statu",0);
+        teamWrapper.eq("guide_id",guideId);
+        List<Team> teamList=teamService.selectList(teamWrapper);
+        finalTeam.addAll(teamList);
+        for(Team team:teamList){
+            if(existTeamIds.contains(team.getId())){
+                finalTeam.remove(team);
+            }
+        }
+        return new PageResult<Team>(200,"查询成功",finalTeam.size(),finalTeam);
+    }
+
+    /**
+     * 查询去重后的团队列表，租车界面使用
+     * @param guideId
+     * @return
+     */
+    @RequestMapping("queryNotRepactForHotal")
+    public PageResult<Team> queryNotRepactForHotal(Integer guideId){
+        EntityWrapper<HotalOrder> HotalOrderWrapper=new EntityWrapper<HotalOrder>();
+        List<HotalOrder> HotalOrders= hotalOrderService.selectList(HotalOrderWrapper);
+        List<Integer> existTeamIds=HotalOrders.stream().map(hotalOrder->hotalOrder.getTeamId()).collect(Collectors.toList());
+        List<Team> finalTeam=new ArrayList<>();
+
+        EntityWrapper<Team> teamWrapper=new EntityWrapper<>();
+        teamWrapper.eq("statu",0);
+        teamWrapper.eq("guide_id",guideId);
+        List<Team> teamList=teamService.selectList(teamWrapper);
+        finalTeam.addAll(teamList);
+        for(Team team:teamList){
+            if(existTeamIds.contains(team.getId())){
+                finalTeam.remove(team);
+            }
+        }
+        return new PageResult<Team>(200,"查询成功",finalTeam.size(),finalTeam);
+    }
+
+
+    @RequestMapping("queryAllTeamByGuideId")
+    public PageResult<Team> queryAllTeamByGuideId(Integer guideId){
+        EntityWrapper<Team> teamEntityWrapper=new EntityWrapper<>();
+        teamEntityWrapper.eq("guide_id",guideId);
+        List<Team> teamList=teamService.selectList(teamEntityWrapper);
+        return  new PageResult<>(200,"查询成功",teamList.size(),teamList);
     }
 
     public void setTeamGuideAndPersonName(Team team){

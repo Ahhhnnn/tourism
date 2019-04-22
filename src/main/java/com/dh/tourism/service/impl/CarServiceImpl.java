@@ -22,4 +22,11 @@ import java.util.List;
 @Service
 public class CarServiceImpl extends ServiceImpl<CarMapper,Car> implements CarService{
 
+    @Override
+    public Car queryById(Integer carId) {
+        EntityWrapper<Car> carEntityWrapper=new EntityWrapper<>();
+        carEntityWrapper.eq("id",carId);
+        List<Car> carList=baseMapper.selectList(carEntityWrapper);
+        return carList.get(0);
+    }
 }

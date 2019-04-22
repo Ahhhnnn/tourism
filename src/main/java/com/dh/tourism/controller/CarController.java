@@ -92,4 +92,25 @@ public class CarController {
         List<Car> carList = carPage.getRecords();
         return new PageResult<>(carList, count.size());
     }
+
+    /**
+     * 查询所有的车辆信息，展示车辆信息用
+     * @return
+     */
+    @RequestMapping("queryAll")
+    public PageResult<Car> queryAll(){
+        EntityWrapper<Car> entityWrapper=new EntityWrapper<>();
+        entityWrapper.eq("statu",0);
+        List<Car> carList=carService.selectList(entityWrapper);
+        return  new PageResult<>(200,"查询成功",carList.size(),carList);
+    }
+
+    @RequestMapping("queryById")
+    public PageResult<Car> queryById(Integer id){
+
+        Car car=carService.queryById(id);
+        List<Car> carList=new ArrayList<>();
+        carList.add(car);
+        return new PageResult<>(200,"查询成功",carList.size(),carList);
+    }
 }

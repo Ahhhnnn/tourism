@@ -9,6 +9,7 @@ import com.dh.tourism.model.Guide;
 import com.dh.tourism.service.CarService;
 import com.dh.tourism.service.GuideService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -33,5 +34,16 @@ public class GuideServiceImpl extends ServiceImpl<GuideMapper,Guide> implements 
             return guides.get(0);
         }
 
+    }
+
+    @Override
+    public Guide getGuideById(Integer id) {
+        EntityWrapper<Guide> entityWrapper=new EntityWrapper<Guide>();
+        entityWrapper.eq("id",id);
+        List<Guide> guideList=baseMapper.selectList(entityWrapper);
+        if(CollectionUtils.isEmpty(guideList)){
+            return null;
+        }
+        return guideList.get(0);
     }
 }

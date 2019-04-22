@@ -1,13 +1,12 @@
 package com.dh.tourism.service;
 
 import com.baomidou.mybatisplus.service.IService;
-import com.dh.tourism.model.Car;
+import com.dh.tourism.model.CarOrder;
 import com.dh.tourism.model.Hotal;
 import com.dh.tourism.model.HotalOrder;
 
 
-public interface HotalService extends IService<Hotal>{
+public interface HotalOrderService extends IService<HotalOrder>{
 
-
-    Hotal queryById(Integer hotalId);
+    HotalOrder queryById(Integer hotalOrderId);
 }

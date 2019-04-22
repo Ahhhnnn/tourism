@@ -93,4 +93,22 @@ public class HotalController {
         List<Hotal> hotalList = hotalPage.getRecords();
         return new PageResult<>(hotalList, count.size());
     }
+
+    @RequestMapping("queryById")
+    public PageResult<Hotal> queryById(Integer id){
+        EntityWrapper<Hotal> entityWrapper=new EntityWrapper<Hotal>();
+        entityWrapper.eq("id",id);
+        List<Hotal> hotalList=hotalService.selectList(entityWrapper);
+
+        return new PageResult<>(200,"查询成功",hotalList.size(),hotalList);
+    }
+
+    @RequestMapping("queryAll")
+    public PageResult<Hotal> queryAll(){
+        EntityWrapper<Hotal> entityWrapper=new EntityWrapper<Hotal>();
+        entityWrapper.eq("statu",0);
+        List<Hotal> hotalList=hotalService.selectList(entityWrapper);
+
+        return new PageResult<>(200,"查询成功",hotalList.size(),hotalList);
+    }
 }

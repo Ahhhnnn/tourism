@@ -10,4 +10,5 @@ import java.util.List;
 public interface ScenicService extends IService<Scenic>{
     List<Scenic> queryAll();
     void insertOne(Scenic scenic);
+    Scenic queryById(Integer id);
 }

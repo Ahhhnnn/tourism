@@ -8,5 +8,5 @@ import java.util.List;
 
 
 public interface CarService extends IService<Car>{
-
+    Car queryById(Integer carId);
 }

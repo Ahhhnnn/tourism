@@ -19,6 +19,8 @@ public class Hotal {
     @TableId
     private Integer id;
 
+    private String hotalPicture;
+
     private String hotalName;
 
     private String grade;//酒店等级
@@ -52,6 +54,8 @@ public class Hotal {
     private Integer room4Num;
 
     private String room4Price;
+
+    private String minPrice;
 
     private Integer statu;//状态
 

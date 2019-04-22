@@ -8,32 +8,38 @@ import java.util.Date;
 
 /**
  * @author duhan
- * @title: Car
+ * @title: HotalOrder
  * @projectName tourism
  * @description: TODO
- * @date 2019/4/1622:09
+ * @date 2019/4/2218:23
  */
 @Data
-@TableName("tr_car")
-public class Car {
+@TableName("tr_hotal_order")
+public class HotalOrder {
     @TableId
     private Integer id;
 
-    private String carPicture;//车辆图片
+    private Integer teamId;
 
-    private String carName;
+    private String teamName;
 
-    private String carType;
+    private Integer guideId;
+
+    private String guideName;
+
+    private Integer hotalId;
+
+    private String hotalName;
+
+    private String roomName;
+
+    private Integer roomNum;
+
+    private String startTime;
+
+    private String endTime;
 
     private String price;
-
-    private Integer peopleNum;//限载人数
-
-    private Integer carSum;
-
-    private Integer carNum;
-
-    private Integer carOut;
 
     private Integer statu;
 

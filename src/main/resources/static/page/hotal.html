@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>旅游租车</title>
+    <link rel="stylesheet" href="../assets/libs/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/common.css">
+    <script src="../assets/libs/jquery/jquery-3.2.1.min.js"></script>
+    <script src="../assets/libs/jquery/jquery.cookie.js"></script>
+</head>
+<style>
+    .detailed{
+        border:1px solid #DCDCDC;
+        margin-top: 10px;
+        height: 165px;
+        width: 1100px;
+    }
+    .detailed:hover{
+        border:1px solid #009688;
+    }
+    .hotal_body{
+        margin-left: 100px;
+    }
+    .img{
+        width: 220px;
+        height: 150px;
+        margin-top: 7.5px;
+        margin-left: 5px;
+    }
+    #orderList{
+        margin-top: 10px;
+    }
+
+    #orderHotalBtn{
+        margin-top: 5px;
+        margin-right: 50px;
+    }
+    .price{
+        margin-right: 50px;
+        font-size: 19px;
+    }
+    .right{
+        margin-top: -10px;
+    }
+    .title{
+        font-weight: bold;
+        font-size: 22px;
+    }
+</style>
+<body>
+<div>
+    <div class="layui-layout layui-layout-admin">
+        <div class="hotal_body" id="layuibody">
+            <div>
+                <button id="orderList" class="layui-btn">查看订单</button>
+            </div>
+            <div id="hotalView">
+                <div class="detailed">
+                    <div class="left">
+                        <div class="image" style="float: left;display: inline-block">
+                            <a href=""><img src="../assets/images/hotal/binfen.jpg" class="img"></a>
+                        </div>
+                        <div style="display: inline-block;margin-top: 7px;margin-left: 10px">
+                            <div class="top" style="width: 120px;float:left;">
+                                <div class="title" style="">
+                                    <a>丰田SUV</a>
+                                </div>
+                            </div>
+                            <div style="width: 120px;">
+                                <span>限载人数:&nbsp;40人</span>
+                            </div>
+                            <div style="width: 120px;">
+                                <span>车辆类型:&nbsp;大巴</span>
+                            </div>
+                            <div style="width: 120px;">
+                                <span>剩余数量:&nbsp;20</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right" style="float: right;">
+                        <div class="price">
+                            <span>￥</span>
+                            <span style="color: red;font-size: 20px;font-weight: bold">200</span>
+                            <span>起</span>
+                        </div>
+                        <div>
+                            <button class="layui-btn orderHotalBtn">立即预定</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detailed">
+                    <div class="left">
+                        <div class="image" style="float: left;display: inline-block">
+                            <a href=""><img src="../assets/images/hotal/hotal2.jpg" class="img"></a>
+                        </div>
+                        <div style="display: inline-block;margin-top: 7px;margin-left: 10px">
+                            <div class="top" style="width: 120px;float:left;">
+                                <div class="title" style="">
+                                    <a>丰田SUV</a>
+                                </div>
+                            </div>
+                            <div style="width: 120px;">
+                                <span>限载人数:&nbsp;40人</span>
+                            </div>
+                            <div style="width: 120px;">
+                                <span>车辆类型:&nbsp;大巴</span>
+                            </div>
+                            <div style="width: 120px;">
+                                <span>剩余数量:&nbsp;20</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right" style="float: right;">
+                        <div class="price">
+                            <span>￥</span>
+                            <span style="color: red;font-size: 20px;font-weight: bold">200</span>
+                            <span>起</span>
+                        </div>
+                        <div>
+                            <button class="layui-btn orderHotalBtn">立即预定</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+    <!-- 表格操作列 -->
+    <script type="text/html" id="tableBar">
+        <a class="layui-btn layui-btn layui-btn-sm" lay-event="edit">修改</a>
+        <a class="layui-btn layui-btn-warm layui-btn-sm" lay-event="del">删除</a>
+    </script>
+    <!-- 表单弹窗 -->
+    <script type="text/html" id="hotalOrderForm">
+        <form lay-filter="hotalOrderForm" class="layui-form model-form">
+            <input id="hotalId" name="hotalId" value="" hidden>
+            <input id="guideId" name="guideId" value="" hidden>
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <!--<input id="name" name="name"  type="text" class="layui-input"/>-->
+                    <h1 id="hotalName" name="hotalName"></h1>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">旅行团队</label>
+                <div class="layui-input-block">
+                    <select id="selTeam" name="teamId" xm-select="selTeam" xm-select-skin="default" required>
+                        <option value="">请选择团队</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">参考价格</label>
+                <div class="layui-input-block">
+                    <h4 id="minPrice" style="font-size: 23px;color: red;margin-top: 15px"></h4>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">房间类型</label>
+                <div class="layui-input-block" id="roomName">
+
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择数量</label>
+                <div class="layui-input-block">
+                    <input id="roomNum" name="roomNum"  class="layui-input"
+                           maxlength="20" lay-verify="required|number" required/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">入住时间</label>
+                <div class="layui-input-block">
+                    <input id="beginTime" name="startTime"  class="layui-input" required/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">离店时间</label>
+                <div class="layui-input-block">
+                    <input id="endTime" name="endTime"  class="layui-input"/>
+                </div>
+            </div>
+            <div class="layui-form-item text-right">
+                <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+                <button class="layui-btn" lay-filter="hotalOrderFormSubmit" lay-submit>预订</button>
+            </div>
+        </form>
+    </script>
+    <script id="hotal_demo" type="text/html">
+        {{#  layui.each(d.data, function(index, item){ }}
+        <div class="detailed">
+            <div class="left">
+                <div class="image" style="float: left;display: inline-block">
+                    <a href=""><img src="../assets/images/hotal/{{item.hotalPicture}}" class="img"></a>
+                </div>
+                <div style="display: inline-block;margin-top: 7px;margin-left: 10px">
+                    <div class="top" style="width: 300px;float:left;">
+                        <div class="title" style="">
+                            <a>{{item.hotalName}}</a>
+                        </div>
+                    </div>
+                    <div style="width: 140px;">
+                        <span>酒店星级:&nbsp;{{item.grade}}星级</span>
+                    </div>
+                    <div style="width: 200px;">
+                        <span>酒店电话:&nbsp;{{item.phone}}</span>
+                    </div>
+                    <div style="width: 200px;">
+                        <span>酒店地址:&nbsp;{{item.address}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="right" style="float: right;">
+                <div class="price">
+                    <span>￥</span>
+                    <span style="color: red;font-size: 20px;font-weight: bold">{{item.minPrice}}</span>
+                    <span>起</span>
+                </div>
+                <div>
+                    <button class="layui-btn"id="orderHotalBtn" onclick="showDetail({{item.id}})">立即预定</button>
+                </div>
+            </div>
+        </div>
+        {{#  }); }}
+    </script>
+    <script type="text/html" id="hotalOrders">
+        <table class="layui-table" id="hotalOrdersTable" lay-filter="hotalOrdersTable"></table>
+    </script>
+<script src="../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../assets/common.js"></script>
+<script>
+    layui.use(['jquery', 'layer', 'element', 'form', 'admin','laytpl','laydate','table','util'], function(){
+        var element = layui.element;
+        var laytpl=layui.laytpl;
+        var admin = layui.admin;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form=layui.form;
+        var mTeamNotRepat=[];
+        var mTeams=[];
+        var laydate=layui.laydate;
+        var table=layui.table;
+        var util=layui.util;
+        //…
+        var guidename=$.cookie('guidename');
+        var guideid=$.cookie('id');
+
+
+        showDetail=function (id) {
+            var data=[];
+            var hotal;
+            admin.req('hotal/queryById', {id:id}, function (res) {
+                layer.closeAll('loading');
+                if (200 == res.code) {
+                    data=res.data;
+                    hotal=data[0];
+                    console.log("酒店名称："+hotal.hotalName);
+                } else {
+                    layer.msg('获取信息失败', {icon: 2});
+                }
+                //点击后弹出一个layer预订酒店
+                layer.open({
+                    type: 1,
+                    area: '450px',
+                    offset: '65px',
+                    title: '酒店预订',
+                    content: $('#hotalOrderForm').html(),
+                    success: function (layero, index) {
+                        $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                        $('#hotalId').val(hotal.id);
+                        $('#hotalName').text(hotal.hotalName);
+                        $('#minPrice').text(hotal.minPrice+"元起");
+                        $('#guideId').val(guideid);
+                        if(hotal.room1!=null){
+                            $('#roomName').append("<input value='"+hotal.room1+"' name='roomName' title='"+hotal.room1+"' type='radio'>"+"</input>");
+                        }
+                        if(hotal.room2!=null){
+                            $('#roomName').append("<input value='"+hotal.room2+"' name='roomName' title='"+hotal.room2+"' type='radio'>"+"</input>");
+                        }
+                        if(hotal.room3!=null){
+                            $('#roomName').append("<input value='"+hotal.room3+"' name='roomName' title='"+hotal.room3+"' type='radio'>"+"</input>");
+                        }
+                        if(hotal.room4!=null){
+                            $('#roomName').append("<input value='"+hotal.room4+"' name='roomName' title='"+hotal.room4+"' type='radio'>"+"</input>");
+                        }
+                        //渲染团队选项
+                        var teamSelData=new Array();
+                        for (var i=0;i<mTeamNotRepat.length;i++){
+                            teamSelData.push({name:mTeamNotRepat[i].teamName,value:mTeamNotRepat[i].id});
+                        }
+                        for(var i=0;i<teamSelData.length;i++){
+                            $('#selTeam').append("<option value='"+teamSelData[i].value+"'>"+teamSelData[i].name+"</option>");
+                        }
+                        form.render();
+                        // 表单提交事件
+                        form.on('submit(hotalOrderFormSubmit)', function (d) {
+                            //d.field.roleIds = formSelects.value('selRole', 'valStr');
+                            layer.load(2);
+                            admin.req('hotalOrder/insert', d.field, function (res) {
+                                layer.closeAll('loading');
+                                if (res.code == 200) {
+                                    layer.msg(res.msg, {icon: 1});
+                                    layer.closeAll('page');
+                                    location.reload();
+                                } else {
+                                    layer.msg(res.msg, {icon: 2});
+                                }
+                            },'PUT');
+                            return false;
+                        });
+                    }
+
+                });
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#beginTime'//指定元素
+
+                });
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#endTime' //指定元素
+                });
+              }, 'GET');
+
+
+        };
+
+        //监听查看订单按钮点击
+        $('#orderList').click(function () {
+            //弹出layer展示订单
+            layer.open({
+                type: 1,
+                area: '1200px',
+                offset: '30px',
+                title: '酒店订单',
+                content: $('#hotalOrders').html(),
+                success:function (layero, index) {
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                    //渲染表格
+                    table.render({
+                        elem: '#hotalOrdersTable',
+                        height:530,
+                        url: base_server + 'hotalOrder/query',
+                        method: 'post',
+                        where: {
+                            guideId:guideid
+                        },
+                        page: true,
+                        cellMinWidth: 100,
+                        cols: [[
+                            {type: 'numbers'},
+                            {field: 'hotalName', title: '酒店名称'},
+                            {field: 'teamName', title: '团队名称'},
+                            {field: 'guideName', title: '导游名称'},
+                            {field: 'startTime', title: '入住日期'},
+                            {field: 'endTime', title: '离店日期'},
+                            {field: 'price', title: '总价'},
+                            {
+                                templet: function (d) {
+                                    return util.toDateString(d.createTime);
+                                }, title: '创建时间',width:200
+                            },
+                            {align: 'center', toolbar: '#tableBar', title: '操作', unresize: true, width: 200}
+                        ]],
+                        skin: 'line',
+                        size: 'lg'
+                    });
+
+                }
+            });
+
+        });
+
+        // 工具条点击事件
+        table.on('tool(hotalOrdersTable)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+
+            if (layEvent === 'del') { // 删除
+                layer.confirm('确定删除此订单吗？', function (i) {
+                    layer.close(i);
+                    layer.load(2);
+                    admin.req('hotalOrder/delete/' + obj.data.id, {}, function (data) {
+                        layer.closeAll('loading');
+                        if (data.code == 200) {
+                            layer.msg(data.msg, {icon: 1});
+                            obj.del();
+                            location.reload();
+                        } else {
+                            layer.msg(data.msg, {icon: 2});
+                        }
+                    }, 'DELETE');
+                });
+            } else if (layEvent === 'edit') { // 修改
+                showEditModel(data);
+            }
+        });
+        // 显示表单弹窗
+        function showEditModel(data) {
+            console.log(data);
+            layer.open({
+                type: 1,
+                area: '400px',
+                offset: '65px',
+                title: '修改订单信息',
+                content: $('#hotalOrderForm').html(),
+                success: function (layero, index) {
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                    form.render();
+                    //渲染团队选项
+                    var teamSelData=new Array();
+                    for (var i=0;i<mTeams.length;i++){
+                        teamSelData.push({name:mTeams[i].teamName,value:mTeams[i].id});
+                    }
+                    for(var i=0;i<teamSelData.length;i++){
+                        $('#selTeam').append("<option value='"+teamSelData[i].value+"'>"+teamSelData[i].name+"</option>");
+                    }
+                    form.render('select');
+                    // 回显team数据
+                    if (data) {
+                        form.val('hotalOrderForm', data);
+                        $('#hotalName').text(data.hotalName);
+                        $('#price').text(data.price+"元");
+                    }
+                    form.render();
+                    // 表单提交事件
+                    form.on('submit(hotalOrderFormSubmit)', function (d) {
+                        layer.load(2);
+                        admin.req('hotalOrder/update', d.field, function (res) {
+                            layer.closeAll('loading');
+                            if (res.code == 200) {
+                                layer.msg(res.msg, {icon: 1});
+                                layer.closeAll('page');
+                                table.reload('hotalOrdersTable');
+                            } else {
+                                layer.msg(res.msg, {icon: 2});
+                            }
+                        },'PUT');
+                        return false;
+                    });
+                }
+
+            });
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#beginTime'//指定元素
+
+            });
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#endTime' //指定元素
+            });
+        }
+        //查询所有车辆信息
+        console.log("发送ajax请求");
+        admin.req('hotal/queryAll', {}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                var hotal_demo=document.getElementById('hotal_demo');
+                var getTpl = hotal_demo.innerHTML
+                    ,view = document.getElementById('hotalView');
+                laytpl(getTpl).render(res, function(html){
+                    view.innerHTML = html;
+                });
+            } else {
+                layer.msg('获取信息失败', {icon: 2});
+            }
+        }, 'GET');
+
+
+        admin.req('team/queryNotRepactForHotal', {guideId:guideid}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                mTeamNotRepat=res.data;
+                for(var i=0;i<mTeamNotRepat.length;i++) {
+                    console.log("去重后团队:"+mTeamNotRepat[i].teamName);
+                }
+            } else {
+                layer.msg('获取信息失败', {icon: 2});
+            }
+        }, 'GET');
+
+        //导游所有的团队 修改订单是使用
+        admin.req('team/queryAllTeamByGuideId', {guideId:guideid}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                mTeams=res.data;
+                for(var i=0;i<mTeams.length;i++) {
+                    console.log("团队:"+mTeams[i].teamName);
+                }
+            } else {
+                layer.msg('获取信息失败', {icon: 2});
+            }
+        }, 'GET');
+
+
+    });
+</script>
+</body>
+</html>
